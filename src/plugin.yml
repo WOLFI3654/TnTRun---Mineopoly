@@ -1,0 +1,9 @@
+name: TnT-Run
+version: 1.0.0
+author: Zangenbert
+main: net.zangenbert.tnt.main.Main
+depend: [Mineopoly]
+
+commands:
+     tntrun:
+          aliases: [tnt]
