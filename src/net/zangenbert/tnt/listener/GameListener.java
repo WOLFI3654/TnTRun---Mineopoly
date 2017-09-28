@@ -61,7 +61,7 @@ public class GameListener extends MinigameHook {
 							p.setFlying(true);
 						}, 20);
 						if (this.alive.size() == 1) {
-							win(this.alive.get(0));
+							Bukkit.getScheduler().runTask(plugin, ()->win(this.alive.get(0)));
 							return;
 						}
 					} else {
