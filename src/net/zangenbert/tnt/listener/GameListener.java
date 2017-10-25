@@ -65,8 +65,8 @@ public class GameListener extends MinigameHook {
 							return;
 						}
 					} else {
-						if ((loc.getBlock().getType() == Material.STAINED_CLAY)
-								&& loc.getBlock().getData() != (byte) 0) {
+						if ((loc.getBlock().getType() == Material.STAINED_CLAY
+								&& loc.getBlock().getData() != (byte) 0) || loc.getBlock().getType() == Material.AIR) {
 							return;
 						}
 						restore.put(loc.toVector(), new AbstractMap.SimpleEntry<Material, Byte>(loc.getBlock().getType(), loc.getBlock().getData()));
