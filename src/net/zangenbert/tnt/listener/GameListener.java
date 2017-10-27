@@ -43,66 +43,69 @@ public class GameListener extends MinigameHook {
 	public void onMove(PlayerMoveEvent e) {
 		if (this.started) {
 			final Player p = e.getPlayer();
-			Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-				if (this.isAlive(p)) {
-					final Location loc = p.getLocation().subtract(0.0, 1.0, 0.0);
-					if (loc.getBlock().getType() == Material.BEDROCK) {
-						this.alive.remove(this.getBoard().getByBukkitPlayer(p));
-						Messages.MINIGAME_DEATH.broadcast(this.getBoard().getByBukkitPlayer(p).getDisplay(),
-								this.getName());
-						// Bukkit.broadcastMessage(//XXX
-						// plugin.pre + "Â§cDer Spieler Â§6" + p.getName() + "
-						// Â§cist ausgeschieden");
-						Bukkit.broadcastMessage(plugin.pre + "§e" + this.alive.size() + " §7Spieler verbleibend.");
-						Vector v = p.getLocation().getDirection().multiply(0.1).setY(1.4D);
-						Bukkit.getScheduler().runTask(plugin, () -> p.setVelocity(v));
-						Bukkit.getScheduler().runTaskLater(plugin, () -> {
-							p.setAllowFlight(true);
-							p.setFlying(true);
-						}, 20);
-						if (this.alive.size() == 1) {
-							Bukkit.getScheduler().runTask(plugin, ()->win(this.alive.get(0)));
-							return;
-						}
-					} else {
-						if ((loc.getBlock().getType() == Material.STAINED_CLAY
-								&& loc.getBlock().getData() != (byte) 0) || loc.getBlock().getType() == Material.AIR) {
-							return;
-						}
-						restore.put(loc.toVector(), new AbstractMap.SimpleEntry<Material, Byte>(loc.getBlock().getType(), loc.getBlock().getData()));
+			if (this.isAlive(p)) {
+				final Location loc = p.getLocation().subtract(0.0, 1.0, 0.0);
+				final Vector vec = p.getLocation().getDirection().normalize().multiply(-0.5D).setY(1.0D);
 
-						Bukkit.getScheduler().runTask(plugin, () -> loc.getBlock().setData((byte) 5));
-
-						// GELB
-						Bukkit.getScheduler().runTaskLater(plugin, () -> loc.getBlock().setData((byte) 4), 1 * 10);
-
-						// ORANGE
-						Bukkit.getScheduler().runTaskLater(plugin, () -> loc.getBlock().setData((byte) 1), 2 * 10);
-
-						// ROT
-						Bukkit.getScheduler().runTaskLater(plugin, () -> loc.getBlock().setData((byte) 14), 3 * 10);
-
-						// LUFT
-						final Vector vec = p.getLocation().getDirection().normalize().multiply(-0.5D).setY(1.0D);
-						Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-							@Override
-							public void run() {
-								loc.getBlock().setType(Material.AIR);
-								loc.add(0, 1, 0);
-								loc.getBlock().setType(Material.STAINED_CLAY);
-								loc.getBlock().setData((byte) 14);
-
-								TimedEntity block = new TimedEntity(EntityType.FALLING_BLOCK, loc, 20);
-								block.metadata(CancelConstants.CANCEL_BLOCK_CHANGE, new FixedMetadataValue(Main.getMain(), true));
-								block.vector(vec);
-								
-							}
-						}, 4 * 10);
+				if (loc.getBlock().getType() == Material.BEDROCK) {
+					this.alive.remove(this.getBoard().getByBukkitPlayer(p));
+					Messages.MINIGAME_DEATH.broadcast(this.getBoard().getByBukkitPlayer(p).getDisplay(),
+							this.getName());
+					// Bukkit.broadcastMessage(//XXX
+					// plugin.pre + "Â§cDer Spieler Â§6" + p.getName() + "
+					// Â§cist ausgeschieden");
+					Bukkit.broadcastMessage(plugin.pre + "§e" + this.alive.size() + " §7Spieler verbleibend.");
+					Vector v = p.getLocation().getDirection().multiply(0.1).setY(1.4D);
+					Bukkit.getScheduler().runTask(plugin, () -> p.setVelocity(v));
+					Bukkit.getScheduler().runTaskLater(plugin, () -> {
+						p.setAllowFlight(true);
+						p.setFlying(true);
+					}, 20);
+					if (this.alive.size() == 1) {
+						Bukkit.getScheduler().runTask(plugin, () -> win(this.alive.get(0)));
+						return;
 					}
+				} else {
+					if ((loc.getBlock().getType() == Material.STAINED_CLAY || loc.getBlock().getData() != (byte) 0)
+							|| loc.getBlock().getType() == Material.AIR) {
+						return;
+					}
+					restore.put(loc.toVector(), new AbstractMap.SimpleEntry<Material, Byte>(loc.getBlock().getType(),
+							loc.getBlock().getData()));
 
+					Bukkit.getScheduler().runTask(plugin, () -> loc.getBlock().setData((byte) 5));
+
+					// GELB
+					Bukkit.getScheduler().runTaskLater(plugin, () -> loc.getBlock().setData((byte) 4), 1 * 10);
+
+					// ORANGE
+					Bukkit.getScheduler().runTaskLater(plugin, () -> loc.getBlock().setData((byte) 1), 2 * 10);
+
+					// ROT
+					Bukkit.getScheduler().runTaskLater(plugin, () -> loc.getBlock().setData((byte) 14), 3 * 10);
+
+					// LUFT
+					Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+						@Override
+						public void run() {
+							loc.getBlock().setType(Material.AIR);
+							loc.add(0, 1, 0);
+							loc.getBlock().setType(Material.STAINED_CLAY);
+							loc.getBlock().setData((byte) 14);
+
+							TimedEntity block = new TimedEntity(EntityType.FALLING_BLOCK, loc, 20);
+							block.metadata(CancelConstants.CANCEL_BLOCK_CHANGE,
+									new FixedMetadataValue(Main.getMain(), true));
+							block.vector(vec);
+
+						}
+					}, 4 * 10);
 				}
-			});
+
+			}
+
 		}
+
 	}
 
 	@EventHandler
