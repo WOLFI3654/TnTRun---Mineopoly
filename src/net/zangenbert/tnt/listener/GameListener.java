@@ -56,12 +56,13 @@ public class GameListener extends MinigameHook {
 					// Â§cist ausgeschieden");
 					Bukkit.broadcastMessage(plugin.pre + "§e" + this.alive.size() + " §7Spieler verbleibend.");
 					Vector v = p.getLocation().getDirection().multiply(0.1).setY(1.4D);
-					Bukkit.getScheduler().runTask(plugin, () -> p.setVelocity(v));
+					p.setVelocity(v);
 					Bukkit.getScheduler().runTaskLater(plugin, () -> {
 						p.setAllowFlight(true);
 						p.setFlying(true);
 					}, 20);
 					if (this.alive.size() == 1) {
+						this.started = false;
 						Bukkit.getScheduler().runTask(plugin, () -> win(this.alive.get(0)));
 						return;
 					}
